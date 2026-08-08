@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <h1 class="text-center text-danger fw-bold mb-5">
+        📞 Contact Us
+    </h1>
+
+    <div class="row">
+
+        <!-- Contact Information -->
+        <div class="col-md-6">
+
+            <div class="card shadow p-4">
+
+                <h3 class="text-danger mb-4">
+                    🍛 RP BIRYAANI HOTEL
+                </h3>
+
+                <p>
+                    <strong>📍 Address:</strong><br>
+                    Shivalli, Mandya, Karnataka
+                </p>
+
+                <p>
+                    <strong>📞 Phone:</strong><br>
+                    +91 9380476414
+                </p>
+
+                <p>
+                    <strong>📧 Email:</strong><br>
+                    rpbiryaanihotel@gmail.com
+                </p>
+
+                <p>
+                    <strong>🕒 Opening Hours:</strong><br>
+                    11:00 AM – 8:00 PM
+                </p>
+
+                <a href="https://wa.me/919380476414"
+                   target="_blank"
+                   class="btn btn-success btn-lg mt-3">
+                    📲 Order on WhatsApp
+                </a>
+
+            </div>
+
+        </div>
+
+        <!-- Contact Form -->
+        <div class="col-md-6">
+
+            <div class="card shadow p-4">
+
+                <h3 class="text-center mb-4">
+                    Send Us a Message
+                </h3>
+
+                <form>
+
+                    <input
+                        type="text"
+                        class="form-control mb-3"
+                        placeholder="Your Name">
+
+                    <input
+                        type="email"
+                        class="form-control mb-3"
+                        placeholder="Email Address">
+
+                    <input
+                        type="text"
+                        class="form-control mb-3"
+                        placeholder="Phone Number">
+
+                    <textarea
+                        class="form-control mb-3"
+                        rows="5"
+                        placeholder="Your Message"></textarea>
+
+                    <button class="btn btn-danger w-100">
+                        Send Message
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Google Map -->
+
+    <div class="mt-5">
+
+        <h2 class="text-center mb-4">
+            📍 Find Us
+        </h2>
+
+        <iframe
+            src="https://www.google.com/maps?q=Mandya,Karnataka&output=embed"
+            width="100%"
+            height="400"
+            style="border:0;border-radius:15px;"
+            allowfullscreen=""
+            loading="lazy">
+        </iframe>
+
+    </div>
+
+</div>
+
+{% endblock %}

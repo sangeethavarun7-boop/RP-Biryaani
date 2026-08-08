@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h1 class="text-center text-danger mb-5">
+        🍛 Our Menu 🍛
+    </h1>
+
+    <div class="row">
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <img src="{{ url_for('static', filename='images/chicken_biryani.jpg') }}" class="card-img-top">
+                <div class="card-body text-center">
+                    <h4>Chicken Biryani</h4>
+                    <h5 class="text-success">₹140</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <img src="{{ url_for('static', filename='images/fish_fry.jpg') }}" class="card-img-top">
+                <div class="card-body text-center">
+                    <h4>Fish Fry</h4>
+                    <h5 class="text-success">₹150</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+               <img src="{{ url_for('static', filename='images/kabab.jpg') }}" class="card-img-top">
+                <div class="card-body text-center">
+                    <h4>Kabab</h4>
+                    <h5 class="text-success">₹160</h5>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card shadow">
+                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=600" class="card-img-top">
+                <div class="card-body text-center">
+                    <h4>Kaima unde saaru</h4>
+                    <h5 class="text-success">₹200</h5>
+                </div>
+            </div>
+        </div>
+
+</form>
+
+    </div>
+
+</div>
+
+{% endblock %}

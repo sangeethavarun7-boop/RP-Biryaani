@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="row align-items-center">
+
+        <div class="col-md-6">
+            <img src="{{ url_for('static', filename='images/hotel.jpg') }}"
+                 class="img-fluid rounded shadow"
+                 alt="RP BIRYAANI HOTEL">
+        </div>
+
+        <div class="col-md-6">
+
+            <h1 class="text-danger fw-bold mb-4">
+                🍛 About RP BIRYAANI
+            </h1>
+
+            <p class="lead">
+                Welcome to <strong>RP BIRYAANI HOTEL</strong>, where every meal is
+                prepared with authentic spices, fresh ingredients, and traditional recipes.
+            </p>
+
+            <p>
+                We are passionate about serving delicious South Indian dishes with
+                quality, hygiene, and unforgettable taste.
+            </p>
+
+            <h4 class="mt-4">⭐ Our Special Dishes</h4>
+
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">🍗 Chicken Biryani</li>
+                <li class="list-group-item">🍳 Egg Rice</li>
+                <li class="list-group-item">🐟 Fish Fry</li>
+                <li class="list-group-item">🍢 Chicken Kabab</li>
+                <li class="list-group-item">🥘 Kaima Unde Saaru</li>
+            </ul>
+
+            <div class="mt-4">
+                <a href="/menu" class="btn btn-danger btn-lg">
+                    View Menu
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

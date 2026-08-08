@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container text-center mt-5">
+
+    <div class="checkmark">
+        ✓
+    </div>
+
+    <h1 class="text-success mt-4">
+        Order Placed Successfully!
+    </h1>
+
+    <p class="lead">
+        Thank you for choosing <b>RP BIRYAANI</b> 🍛
+    </p>
+
+    <div class="card shadow p-4 mt-4">
+
+        <h3>Your Order Summary</h3>
+        <hr>
+
+        <h5>Name : {{ name }}</h5>
+
+        <h5>Food : {{ food }}</h5>
+
+        <h5>Quantity : {{ quantity }}</h5>
+
+        <h5>Phone : {{ phone }}</h5>
+
+        <h5>Address : {{ address }}</h5>
+
+    </div>
+
+    <a href="/" class="btn btn-danger btn-lg mt-4">
+        🏠 Back to Home
+    </a>
+
+</div>
+
+<style>
+
+.checkmark{
+
+width:130px;
+height:130px;
+background:#28a745;
+border-radius:50%;
+margin:auto;
+font-size:70px;
+color:white;
+line-height:130px;
+
+animation:zoom .7s;
+
+}
+
+@keyframes zoom{
+
+0%{
+transform:scale(0);
+}
+
+100%{
+transform:scale(1);
+}
+
+}
+
+</style>
+
+<script>
+
+window.onload=function(){
+
+confetti({
+particleCount:200,
+spread:180,
+origin:{y:0.6}
+});
+
+let audio=new Audio("/static/sounds/success.mp3");
+audio.play();
+
+setTimeout(function(){
+
+let msg=new SpeechSynthesisUtterance(
+"Your order has been placed successfully. Thank you for choosing RP Biryaani."
+);
+
+msg.lang="en-IN";
+
+speechSynthesis.speak(msg);
+
+},1000);
+
+}
+
+</script>
+
+{% endblock %}

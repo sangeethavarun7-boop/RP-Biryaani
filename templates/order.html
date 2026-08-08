@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <h1 class="text-center text-danger mb-5">
+        🍛 Order Your Food
+    </h1>
+
+    <form action="/order" method="POST">
+
+        <div class="mb-3">
+            <label>Name</label>
+            <input
+                type="text"
+                name="name"
+                class="form-control"
+                required>
+        </div>
+
+        <div class="mb-3">
+            <label>Phone Number</label>
+            <input
+                type="text"
+                name="phone"
+                class="form-control"
+                required>
+        </div>
+
+        <div class="mb-3">
+            <label>Select Food</label>
+
+            <select
+                class="form-control"
+                name="food">
+
+                <option>Chicken Biryani</option>
+                <option>Egg Rice</option>
+                <option>Fish Fry</option>
+                <option>Chicken Kabab</option>
+                <option>Kaima Unde Saaru</option>
+
+            </select>
+
+        </div>
+
+        <div class="mb-3">
+            <label>Quantity</label>
+            <input
+                type="number"
+                name="quantity"
+                class="form-control"
+                min="1"
+                required>
+        </div>
+
+        <div class="mb-3">
+            <label>Delivery Address</label>
+
+            <textarea
+                name="address"
+                class="form-control"
+                rows="3"
+                required></textarea>
+
+        </div>
+
+        <div class="mb-3">
+            <label>Special Instructions</label>
+
+            <textarea
+                name="message"
+                class="form-control"
+                rows="3"></textarea>
+
+        </div>
+
+        <button
+            class="btn btn-danger btn-lg w-100">
+            Place Order
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}
