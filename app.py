@@ -1,5 +1,8 @@
 import sqlite3
 import os 
+import smtplib
+
+from email.message import EmailMessage
 from flask import Flask, render_template, request, redirect, url_for, session
 from urllib.parse import quote
 from datetime import datetime
@@ -8,6 +11,68 @@ from functools import wraps
 app = Flask(__name__)
 
 app.secret_key = os.environ.get("SECRET_KEY")
+
+def send_order_email(order_details):
+    sender_email = os.environ.get("MAIL_USERNAME")
+    sender_password = os.environ.get("MAIL_PASSWORD")
+
+    recipients = [
+        os.environ.get("ORDER_EMAIL_1"),
+        os.environ.get("ORDER_EMAIL_2")
+    ]
+
+    # Remove empty email addresses
+    recipients = [email for email in recipients if email]
+
+    if not sender_email or not sender_password or not recipients:
+        print("Email settings are missing.")
+        return False
+
+    message = EmailMessage()
+
+    message["Subject"] = "🔔 New RP Biryaani Order"
+    message["From"] = sender_email
+    message["To"] = ", ".join(recipients)
+
+    message.set_content(f"""
+NEW RP BIRYAANI ORDER
+=====================
+
+Customer Name: {order_details.get("name", "")}
+Phone: {order_details.get("phone", "")}
+
+Food: {order_details.get("food", "")}
+Quantity: {order_details.get("quantity", "")}
+
+Address:
+{order_details.get("address", "")}
+
+Message:
+{order_details.get("message", "")}
+
+Payment Method:
+{order_details.get("payment_method", "")}
+
+Total Amount:
+₹{order_details.get("total", "")}
+
+Please check the RP Biryaani Admin Panel.
+
+This is an automatic notification from the RP Biryaani website.
+""")
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.send_message(message)
+
+        print("Order notification email sent successfully.")
+        return True
+
+    except Exception as e:
+        print("Email sending failed:", e)
+        return False
 
 # ADMIN LOGIN DETAILS
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME")
@@ -165,7 +230,12 @@ def order():
         name = request.form.get("name", "").strip()
         phone = request.form.get("phone", "").strip()
         food = request.form.get("food", "").strip()
-        quantity = int(request.form.get("quantity", 1))
+
+        try:
+            quantity = int(request.form.get("quantity", 1))
+        except ValueError:
+            return "Invalid quantity", 400
+
         address = request.form.get("address", "").strip()
         message = request.form.get("message", "").strip()
 
@@ -222,12 +292,6 @@ def order():
         # -------------------------
         # BUY 1 GET 1
         # -------------------------
-        # Customer gets every second item free.
-        # Example:
-        # quantity 1 -> pay for 1
-        # quantity 2 -> pay for 1
-        # quantity 3 -> pay for 2
-        # quantity 4 -> pay for 2
 
         elif offer == "bogo":
 
@@ -299,20 +363,58 @@ def order():
         conn.close()
 
         # -------------------------
+        # SEND ORDER EMAIL
+        # -------------------------
+
+        order_details = {
+            "name": name,
+            "phone": phone,
+            "food": food,
+            "quantity": quantity,
+            "address": address,
+            "message": message,
+            "payment_method": payment_method,
+            "total": total
+        }
+
+        send_order_email(order_details)
+
+        # -------------------------
         # ONLINE PAYMENT
         # -------------------------
 
-        # Replace this with your restaurant's actual UPI ID.
-        upi_id = os.environ.get("UPI_ID")
+        if payment_method == "Online Payment":
 
-        upi_link = (
-            "upi://pay?"
-            f"pa={quote(upi_id)}"
-            f"&pn={quote('RP Biryaani')}"
-            f"&am={total:.2f}"
-            "&cu=INR"
-            f"&tn={quote(order_id)}"
-        )
+            upi_id = os.environ.get("UPI_ID")
+
+            if not upi_id:
+                return "Online payment is currently unavailable.", 500
+
+            upi_link = (
+                "upi://pay?"
+                f"pa={quote(upi_id)}"
+                f"&pn={quote('RP Biryaani')}"
+                f"&am={total:.2f}"
+                "&cu=INR"
+                f"&tn={quote(order_id)}"
+            )
+
+            return render_template(
+                "success.html",
+                order_id=order_id,
+                name=name,
+                food=food,
+                quantity=quantity,
+                subtotal=subtotal,
+                discount=discount,
+                total=total,
+                payment_method=payment_method,
+                upi_link=upi_link
+            )
+
+        # -------------------------
+        # CASH ON DELIVERY
+        # -------------------------
 
         return render_template(
             "success.html",
@@ -323,15 +425,17 @@ def order():
             subtotal=subtotal,
             discount=discount,
             total=total,
-            payment_method=payment_method,
-            upi_link=upi_link
+            payment_method=payment_method
         )
+
+    # -------------------------
+    # SHOW ORDER PAGE
+    # -------------------------
 
     return render_template(
         "order.html",
         prices=FOOD_PRICES
     )
-
 
 # =========================
 # TRACK ORDER
