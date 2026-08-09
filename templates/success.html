@@ -2,100 +2,189 @@
 
 {% block content %}
 
-<div class="container text-center mt-5">
+<div class="container py-5">
 
-    <div class="checkmark">
-        ✓
+    <div class="card shadow-lg text-center p-5">
+
+        <div style="font-size:70px;">
+            ✅
+        </div>
+
+        <h1 class="text-success">
+            Order Placed Successfully!
+        </h1>
+
+        <p class="lead">
+            Thank you, {{ name }}! 🎉
+        </p>
+
+
+        <div class="alert alert-success">
+
+            Your Order ID is:
+
+            <strong>
+                {{ order_id }}
+            </strong>
+
+        </div>
+
+
+        <div class="card p-4 text-start mb-4">
+
+            <h4>
+                🧾 Order Summary
+            </h4>
+
+            <hr>
+
+            <p>
+                <strong>Food:</strong>
+                {{ food }}
+            </p>
+
+            <p>
+                <strong>Quantity:</strong>
+                {{ quantity }}
+            </p>
+
+            <p>
+                <strong>Subtotal:</strong>
+                ₹{{ "%.2f"|format(subtotal) }}
+            </p>
+
+            <p class="text-success">
+                <strong>Discount:</strong>
+                -₹{{ "%.2f"|format(discount) }}
+            </p>
+
+            <hr>
+
+            <h4 class="text-danger">
+                Total: ₹{{ "%.2f"|format(total) }}
+            </h4>
+
+            <p>
+                <strong>Payment:</strong>
+                {{ payment_method }}
+            </p>
+
+        </div>
+
+
+        {% if payment_method == "Online Payment" %}
+
+        <div class="alert alert-info">
+
+            <h5>
+                📱 Online Payment
+            </h5>
+
+            <p>
+                Click the button below to open your UPI payment app.
+            </p>
+
+            <a
+                href="{{ upi_link }}"
+                class="btn btn-success btn-lg">
+
+                💳 Pay ₹{{ "%.2f"|format(total) }}
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+
+        <div class="d-flex justify-content-center gap-2 flex-wrap">
+
+            <a
+                href="{{ url_for('track') }}"
+                class="btn btn-primary">
+
+                📦 Track Order
+
+            </a>
+
+
+            <a
+                href="{{ url_for('home') }}"
+                class="btn btn-secondary">
+
+                🏠 Back to Home
+
+            </a>
+
+        </div>
+
     </div>
-
-    <h1 class="text-success mt-4">
-        Order Placed Successfully!
-    </h1>
-
-    <p class="lead">
-        Thank you for choosing <b>RP BIRYAANI</b> 🍛
-    </p>
-
-    <div class="card shadow p-4 mt-4">
-
-        <h3>Your Order Summary</h3>
-        <hr>
-
-        <h5>Name : {{ name }}</h5>
-
-        <h5>Food : {{ food }}</h5>
-
-        <h5>Quantity : {{ quantity }}</h5>
-
-        <h5>Phone : {{ phone }}</h5>
-
-        <h5>Address : {{ address }}</h5>
-
-    </div>
-
-    <a href="/" class="btn btn-danger btn-lg mt-4">
-        🏠 Back to Home
-    </a>
 
 </div>
 
-<style>
-
-.checkmark{
-
-width:130px;
-height:130px;
-background:#28a745;
-border-radius:50%;
-margin:auto;
-font-size:70px;
-color:white;
-line-height:130px;
-
-animation:zoom .7s;
-
-}
-
-@keyframes zoom{
-
-0%{
-transform:scale(0);
-}
-
-100%{
-transform:scale(1);
-}
-
-}
-
-</style>
 
 <script>
 
-window.onload=function(){
+// Voice
+window.addEventListener("load", function () {
 
-confetti({
-particleCount:200,
-spread:180,
-origin:{y:0.6}
+    const message =
+        new SpeechSynthesisUtterance(
+            "Your order has been placed successfully."
+        );
+
+    message.rate = 1;
+
+    window.speechSynthesis.speak(message);
+
 });
 
-let audio=new Audio("/static/sounds/success.mp3");
-audio.play();
 
-setTimeout(function(){
+// Confetti
+function celebration() {
 
-let msg=new SpeechSynthesisUtterance(
-"Your order has been placed successfully. Thank you for choosing RP Biryaani."
-);
+    for (let i = 0; i < 100; i++) {
 
-msg.lang="en-IN";
+        const confetti =
+            document.createElement("div");
 
-speechSynthesis.speak(msg);
+        confetti.innerHTML = "🎉";
 
-},1000);
+        confetti.style.position = "fixed";
+        confetti.style.left =
+            Math.random() * 100 + "vw";
+        confetti.style.top = "-20px";
+        confetti.style.fontSize = "20px";
+        confetti.style.zIndex = "9999";
+
+        document.body.appendChild(confetti);
+
+        const animation =
+            confetti.animate(
+                [
+                    {
+                        transform: "translateY(0)"
+                    },
+                    {
+                        transform:
+                            "translateY(100vh) rotate(720deg)"
+                    }
+                ],
+                {
+                    duration:
+                        1000 + Math.random() * 1500
+                }
+            );
+
+        animation.onfinish = () => {
+            confetti.remove();
+        };
+
+    }
 
 }
+
+celebration();
 
 </script>
 
