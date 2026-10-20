@@ -3,12 +3,22 @@ import os
 import smtplib
 
 from email.message import EmailMessage
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import (
+    Flask, render_template, request, redirect,
+    url_for, session, flash
+)
+from datetime import datetime, date
+
 from urllib.parse import quote
-from datetime import datetime
 from functools import wraps
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    template_folder=os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "templates"
+    )
+)
 
 app.secret_key = os.environ.get("SECRET_KEY")
 
@@ -36,7 +46,6 @@ def send_order_email(order_details):
 
     message.set_content(f"""
 NEW RP BIRYAANI ORDER
-=====================
 
 Customer Name: {order_details.get("name", "")}
 Phone: {order_details.get("phone", "")}
@@ -150,6 +159,35 @@ def init_db():
 
 init_db()
 
+def init_bulk_orders_table():
+    conn = get_db()
+
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS bulk_orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            customer_name TEXT NOT NULL,
+            phone TEXT NOT NULL,
+            email TEXT,
+            event_type TEXT NOT NULL,
+            food_type TEXT NOT NULL,
+            guests INTEGER NOT NULL,
+            event_date TEXT NOT NULL,
+            event_time TEXT NOT NULL,
+            food_items TEXT NOT NULL,
+            budget REAL,
+            event_address TEXT NOT NULL,
+            service_type TEXT,
+            notes TEXT,
+            status TEXT NOT NULL DEFAULT 'Pending',
+            created_at TEXT NOT NULL
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+init_bulk_orders_table()
 
 # =========================
 # FOOD PRICES
@@ -162,6 +200,90 @@ FOOD_PRICES = {
     "Kaima Unde Saaru": 200,
     "Egg Rice": 60
 }
+
+
+@app.route("/bulk-order", methods=["GET", "POST"])
+def bulk_order():
+    if request.method == "POST":
+        try:
+            customer_name = request.form.get("customer_name", "").strip()
+            phone = request.form.get("phone", "").strip()
+            email = request.form.get("email", "").strip()
+            event_type = request.form.get("event_type", "").strip()
+            food_type = request.form.get("food_type", "").strip()
+            food_items = request.form.get("food_items", "").strip()
+            event_address = request.form.get("event_address", "").strip()
+            event_date = request.form.get("event_date", "").strip()
+            event_time = request.form.get("event_time", "").strip()
+            service_type = request.form.get("service_type", "").strip()
+            notes = request.form.get("notes", "").strip()
+
+            if not all([
+                customer_name, phone, event_type, food_type,
+                food_items, event_address, event_date, event_time
+            ]):
+                flash("Please fill in all required fields.", "danger")
+                return redirect(url_for("bulk_order"))
+
+            if not phone.isdigit() or len(phone) != 10:
+                flash("Enter a valid 10-digit mobile number.", "danger")
+                return redirect(url_for("bulk_order"))
+
+            guests = int(request.form.get("guests", "0"))
+            if not 1 <= guests <= 100000:
+                flash("Enter a valid guest count.", "danger")
+                return redirect(url_for("bulk_order"))
+
+            parsed_date = date.fromisoformat(event_date)
+            if parsed_date < date.today():
+                flash("Event date cannot be in the past.", "danger")
+                return redirect(url_for("bulk_order"))
+
+            budget_text = request.form.get("budget", "").strip()
+            budget = float(budget_text) if budget_text else None
+
+            if budget is not None and (
+                budget < 0 or budget > 1000000000
+            ):
+                flash("Enter a valid budget.", "danger")
+                return redirect(url_for("bulk_order"))
+
+            conn = get_db()
+            try:
+                conn.execute("""
+                    INSERT INTO bulk_orders (
+                        customer_name, phone, email, event_type,
+                        food_type, guests, event_date, event_time,
+                        food_items, budget, event_address,
+                        service_type, notes, created_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """, (
+                    customer_name, phone, email, event_type,
+                    food_type, guests, event_date, event_time,
+                    food_items, budget, event_address,
+                    service_type, notes,
+                    datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                ))
+                conn.commit()
+            finally:
+                conn.close()
+
+            flash("Your bulk order request was submitted successfully!", "success")
+            return redirect(url_for("bulk_order"))
+
+        except (ValueError, OverflowError):
+            flash("Please check your guest count, date and budget.", "danger")
+            return redirect(url_for("bulk_order"))
+
+        except sqlite3.Error:
+            app.logger.exception("Unable to save bulk order")
+            flash("Unable to save your request. Please try again.", "danger")
+            return redirect(url_for("bulk_order"))
+
+    return render_template(
+        "bulk_order.html",
+        today=date.today().isoformat()
+    )
 
 
 # =========================

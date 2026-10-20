@@ -1,0 +1,168 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container my-5">
+    <div class="text-center mb-4">
+        <h1 class="text-danger fw-bold">🍛 RP Biryaani Bulk Orders</h1>
+        <p class="text-muted">
+            Delicious food for your weddings, parties, festivals and special events!
+        </p>
+    </div>
+
+    <div class="card shadow-lg border-0 mx-auto" style="max-width: 900px;">
+        <div class="card-body p-4 p-md-5">
+
+            <h4 class="mb-4">📋 Tell Us About Your Event</h4>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('bulk_order') }}">
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Customer Name *</label>
+                        <input type="text" name="customer_name"
+                               class="form-control" required maxlength="100">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Mobile Number *</label>
+                        <input type="tel" name="phone"
+                               class="form-control"
+                               pattern="[0-9]{10}"
+                               maxlength="10"
+                               placeholder="10-digit mobile number" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email (Optional)</label>
+                        <input type="email" name="email"
+                               class="form-control" maxlength="150">
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Event Type *</label>
+                        <select name="event_type" class="form-select" required>
+                            <option value="">Select event</option>
+                            <option>Wedding</option>
+                            <option>Birthday Party</option>
+                            <option>Festival</option>
+                            <option>Engagement</option>
+                            <option>Family Function</option>
+                            <option>Office Event</option>
+                            <option>College Event</option>
+                            <option>Religious Function</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Food Preference *</label>
+                        <select name="food_type" class="form-select" required>
+                            <option value="">Select preference</option>
+                            <option>Vegetarian</option>
+                            <option>Non-Vegetarian</option>
+                            <option>Both Veg and Non-Veg</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Expected Guests *</label>
+                        <input type="number" name="guests"
+                               class="form-control" min="1"
+                               max="100000" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Event Date *</label>
+                        <input type="date" name="event_date"
+                               class="form-control"
+                               min="{{ today }}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Food Serving Time *</label>
+                        <input type="time" name="event_time"
+                               class="form-control" required>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <h4 class="mb-3">🍽️ Your Food Requirements</h4>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Enter all dishes and quantities you need *
+                    </label>
+                    <textarea name="food_items" class="form-control"
+                              rows="5" maxlength="5000" required
+                              placeholder="Example:
+Chicken Biryani - 100 plates
+Veg Biryani - 30 plates
+Chicken Kabab - 50 portions
+Fish Fry - 20 pieces
+Water bottles - 150
+Please mention any other dishes you need."></textarea>
+                    <small class="text-muted">
+                        You can request dishes outside our regular menu too.
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Approximate Total Budget (₹)</label>
+                    <input type="number" name="budget"
+                           class="form-control" min="0" step="1"
+                           placeholder="Enter your budget if decided">
+                </div>
+
+                <hr class="my-4">
+
+                <h4 class="mb-3">📍 Delivery & Additional Details</h4>
+
+                <div class="mb-3">
+                    <label class="form-label">Complete Event Address *</label>
+                    <textarea name="event_address" class="form-control"
+                              rows="3" maxlength="1000" required
+                              placeholder="Village, street, landmark, hall or venue name"></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Serving Arrangement</label>
+                    <select name="service_type" class="form-select">
+                        <option value="Food Delivery">Food delivery only</option>
+                        <option value="Pickup">Self pickup</option>
+                        <option value="Catering Enquiry">Catering / serving enquiry</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Special Instructions</label>
+                    <textarea name="notes" class="form-control"
+                              rows="3" maxlength="3000"
+                              placeholder="Spice level, packing, serving arrangements, allergies or other requirements"></textarea>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>Note:</strong> Your request will be reviewed by RP Biryaani.
+                    Final price, availability and order confirmation will be provided
+                    after we contact you.
+                </div>
+
+                <button type="submit"
+                        class="btn btn-danger btn-lg w-100 rounded-pill">
+                    📩 Submit Bulk Order Request
+                </button>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
